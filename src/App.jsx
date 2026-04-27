@@ -27,7 +27,7 @@ export default function App() {
 
   function handleClick(i) {
     const newSquares = squares.slice();
-    if (squares[i]) {
+    if (squares[i] || calculateWinner(squares)) {
       return;
     }
 
@@ -38,6 +38,14 @@ export default function App() {
     }
     setSquares(newSquares);
     setCount(count + 1);
+    const winner = calculateWinner(newSquares);
+    if (winner) {
+      setName(`Player ${winner} wins!`);
+    } else if (count === 8) {
+      setName('It\'s a draw!');
+    } else {
+      setName(`Player ${count % 2 === 0 ? 'O' : 'X'}'s turn`);
+    }
   }
 
   return (<>
