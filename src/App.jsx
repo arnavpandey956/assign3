@@ -3,18 +3,6 @@ import * as ReactBootstrap from 'react-bootstrap'
 
 const { Badge, Button, Card } = ReactBootstrap
 
-const grid = [
-  { id: 1},
-  { id: 2},
-  { id: 3},
-  { id: 4},
-  { id: 5},
-  { id: 6},
-  {id: 7},
-  {id: 8},
-  {id: 9},
-];
-
 function Square ({val , squareClick}) {
   return (<button className='square' onClick={squareClick}>{val}</button>);
 }
