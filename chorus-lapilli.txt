@@ -1,0 +1,105 @@
+Chorus Lapilli Log
+
+Goal: Modify the working tic-tac-toe app into chorus lapilli
+
+Design Plan
+New state needed: selectedSquare (integer or null) — which piece the current
+player has selected for movement. Null means no piece is selected yet.
+
+Phase detection: count the current player's pieces currently on the board.
+If that count equals 3 the player is in the movement phase. This is derived
+from the board snapshot directly, so time travel automatically gives the
+correct phase when jumping to any historical state.
+
+Extract a commitMove(next) helper to avoid duplicating the
+setSquares/setCount/setHistory/setName calls in both branches.
+
+Commit: "finished final chorus lapilli with 2 click mech, invalid place check, adjacent check and button color highlight mechanism"
+
+Step 1 – isAdjacent helper:
+  Added isAdjacent(a, b) below calculateWinner.
+  Converts flat indices to (row, col) pairs using Math.floor(x/3) and x%3.
+  Returns true iff a !== b and both |rowDiff| and |colDiff| are at most 1.
+  Manually verified: 0 and 4 are adjacent (diagonal); 0 and 2 are not
+  (|colDiff| = 2); 0 and 8 are not (both diffs = 2).
+
+Step 2 – selectedSquare state:
+  Added const [selectedSquare, setSelectedSquare] = React.useState(null)
+  to App. Initially null (no piece selected).
+
+Step 3 – Rewrite handleClick with phase detection:
+  Compute currentPlayer from count % 2.
+  Compute currentPlayerCount by filtering squares for currentPlayer.
+  Set isMovementPhase = currentPlayerCount === 3.
+
+  Placement branch (isMovementPhase false):
+    Same as tic-tac-toe: return if square occupied, place piece, commitMove.
+
+  Movement branch (isMovementPhase true):
+    First click (selectedSquare is null):
+      If clicked square is not the current player's piece, do nothing and return.
+      Otherwise call setSelectedSquare(i) to record the selection.
+    Second click (selectedSquare is not null):
+      Same square clicked again deselect (setSelectedSquare(null)), return.
+      Destination occupied invalid, setSelectedSquare(null), return.
+      Destination not adjacent invalid, setSelectedSquare(null), return.
+      Build candidate board: copy squares, set destination to currentPlayer,
+      set selectedSquare index to null.
+      Center-square rule check:
+        If squares[4] === currentPlayer (player holds center)
+        AND selectedSquare !== 4 (this move does not vacate center)
+        AND calculateWinner(next) is null (this move does not win):
+           illegal. setSelectedSquare(null) and return.
+      If all checks pass: setSelectedSquare(null), then commitMove(next).
+
+Step 4 – commitMove helper:
+  Calls calculateWinner(next), then setSquares, setCount, setHistory,
+  and setName in one place, keeping handleClick uncluttered.
+
+Step 5 – Visual highlight for selected piece:
+  Added isSelected prop to Square. When true the button background is
+  set to '#b95ff1' (light purple) via inline style; otherwise '#fff'.
+  Passed isSelected={selectedSquare === i} for each of the nine squares.
+  This gives the player clear feedback on which piece is selected.
+  It has no effect on game logic.
+
+Step 6 – Reset clears selectedSquare:
+  Added setSelectedSquare(null) to the Reset Game button's onClick handler.
+
+Step 7 – jumpTo clears selectedSquare:
+  Added setSelectedSquare(null) to jumpTo so that time-traveling while
+  mid-move does not leave a stale selection.
+
+Testing in the Browser
+Verified with ./helper dev:
+
+Placement phase:
+  First three X placements and first three O placements work like tic-tac-toe.
+  Win on row/column/diagonal detected and board frozen correctly.
+
+Movement phase entry:
+  After X's third piece is placed, clicking an empty square does nothing
+  (correct: must select an own piece first).
+  Clicking an O piece as X does nothing (correct: wrong player).
+  Clicking an X piece highlights it in blue.
+
+Valid movement:
+  Selecting an X piece then clicking an adjacent empty square moves the piece:
+  old square becomes empty, destination shows X, turn advances to O.
+
+Invalid movements (all silently revert):
+  Clicking the same piece again deselects it (no crash).
+  Clicking an occupied square clears selection.
+  Clicking a non-adjacent empty square clears selection.
+  Moving a non-center piece while holding center without winning clears selection.
+
+Center rule:
+  Placed X in center (index 4), completed placement phase.
+  Attempted to move a different X piece to a non-winning square while
+  holding center correctly rejected, selection cleared.
+  Moving the center piece itself to an adjacent square allowed.
+  Moving any piece to complete three-in-a-row allowed (win takes priority).
+
+Time travel:
+  Jumping to an earlier move correctly restores board and clears selection.
+  Playing from that point creates a new branch, overwriting later history.

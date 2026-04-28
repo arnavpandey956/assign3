@@ -1,0 +1,76 @@
+Tic-Tac-Toe Log
+
+Goal: Follow the React tutorial to build a working tic-tac-toe game in src/App.jsx.
+
+Environment Setup
+Verified Node.js and npm were installed.
+Forked the UCLA-CS-35L/assign3 repo on GitHub, then cloned my fork locally.
+Ran ./helper init inside assign3 to install dependencies via npm.
+Ran ./helper dev to confirm the starter app loaded at http://localhost:5173.
+The starter showed a "Hello, World!" card using React Bootstrap components.
+
+Commit: "added grid and square"
+Cleared the starter App.jsx content.
+Defined a Square component that returns a <button className='square'>.
+Defined an App component that renders nine Square components arranged
+in three <div className='board-row'> wrappers, producing a 3x3 grid.
+Opened http://localhost:5173 and confirmed the grid rendered correctly.
+Committed with message: "added grid and square"
+
+Commit: "added states and functioning of squares, X and O, and also the alternate and one symbol per square in grid"
+Added state to App:
+  count (int) – tracks total moves made, used to determine whose turn it is.
+  squares (init by array of 9 nulls) – stores the board contents.
+Wrote handleClick(i):
+  Returns early if squares[i] is already filled.
+  Places 'X' if count is even, 'O' if odd.
+  Updates squares state via setSquares using squares.slice() for immutability.
+  Increments count.
+Passed squareClick={() => handleClick(i)} as a prop to each Square.
+Verified that clicking alternates X and O and that filled squares cannot
+be overwritten.
+Committed with the message above.
+
+Commit: "finalised final grading tic tac toe"
+Added calculateWinner(squares) helper below App.
+  Checks all 8 winning lines (3 rows, 3 columns, 2 diagonals).
+  Returns 'X', 'O', or null.
+Added name state to App (initially "Let's play Tic-Tac-Toe!").
+Updated handleClick to:
+  Return early also if calculateWinner(squares)(game over).
+  Set name to "Player X wins!" / "Player O wins!" on a win.
+  Set name to "It's a draw!" when count reaches 8.
+  Otherwise set name to indicate whose turn is next.
+Rendered name in an <h1> above the board.
+Committed with message: "finalised final grading tic tac toe"
+
+Commit: "removed useless stuff"
+Removed leftover React Bootstrap imports and unused variables that were still present from the starter template.
+Confirmed the app still ran correctly after cleanup.
+Committed with message: "removed useless stuff"
+
+Commit: "added history for all moves and buttons respectively"
+Added history state (array starting with nulls for the empty board).
+Updated handleClick to append the new board to history after every move:
+  setHistory([...history, newSquares])
+Added jumpTo(move) function:
+  Restores squares and count from history[move].
+  Truncates history to history.slice(0, move + 1) so branching works.
+  Resets name to the initial string.
+Built historyButtons by mapping over history with .map():
+  Each entry renders a <li> with a <button> that calls jumpTo(move).
+  Move 0 shows "Go to game start"; others show "Go to move #N".
+Rendered historyButtons inside a <div className="game-info"><ol>.
+Also added a Reset Game button that clears squares, count, history, and name.
+Tested: playing several moves then clicking an old history button restored
+the board correctly; playing from that point overwrote later history.
+Committed with message: "added history for all moves and buttons respectively"
+
+Commit: "complete tic-tac-toe with time travel"
+Reviewed all functionality end-to-end:
+  Alternating turns, win detection, draw detection, blocked moves after win,
+  time travel via history buttons, and reset all working correctly.
+Committed clean final tic-tac-toe with message:
+  "complete tic-tac-toe with time travel"
+
+This working tic-tac-toe served as the base for the chorus lapilli variant.
