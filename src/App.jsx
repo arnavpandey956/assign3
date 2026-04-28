@@ -7,10 +7,6 @@ function Square ({val , squareClick}) {
   return (<button className='square' onClick={squareClick}>{val}</button>);
 }
 
-function moveHistory (hisClick , { turn }) {
-  return (<button className='status' onClick={hisClick}>Move {turn}</button>);
-}
-
 export default function App() {
   const [name, setName] = React.useState('Let\'s play Tic-Tac-Toe!')
   const [count, setCount] = React.useState(0)
@@ -22,7 +18,7 @@ export default function App() {
     if (squares[i] || calculateWinner(squares)) {
       return;
     }
-
+    
     if (count % 2 === 0) {
       newSquares[i] = 'X';
     } else {
@@ -40,7 +36,6 @@ export default function App() {
     } else {
       setName(`Player ${count % 2 === 0 ? 'O' : 'X'}'s turn`);
     }
-    hisButton ({count});
   }
 
   function jumpTo(move) {     
@@ -77,6 +72,7 @@ export default function App() {
       <button className='game-info' onClick={() => {
       setSquares(Array(9).fill(null));
       setCount(0);
+      setHistory([Array(9).fill(null)]);
       setName('Let\'s play Tic-Tac-Toe!');
     }}>Reset Game</button>
     <div className="game-info">
