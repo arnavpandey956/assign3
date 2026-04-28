@@ -8,7 +8,7 @@ function Square({ val, squareClick, isSelected }) {
     <button
       className='square'
       onClick={squareClick}
-      style={{ background: isSelected ? '#a8d8f0' : '#fff' }}>{val}</button>
+      style={{ background: isSelected ? '#b95ff1' : '#fff' }}>{val}</button>
   );
 }
 
@@ -73,6 +73,7 @@ export default function App() {
     setSquares(history[move]);
     setCount(move);
     setHistory(history.slice(0, move + 1));
+    setSelectedSquare(null);
     setName("Let's play Tic-Tac-Toe!");
   }
 
