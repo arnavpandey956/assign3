@@ -155,6 +155,42 @@ class TestChorusLapilli(unittest.TestCase):
         tiles[0].click()
         self.assertTileIs(tiles[0], self.SYMBOL_X)
 
+    def test_no_moves_win(self):
+        '''Check that clicking empty squares after a win does nothing.
+        X wins the top row via: X=0, O=3, X=1, O=4, X=2.
+        Tile 5 must remain empty after an attempted click.
+        '''
+        tiles = self.driver.find_elements(By.XPATH, self.BOARD_TILE_XPATH)
+        tiles[0].click()  #X
+        tiles[3].click()  #O
+        tiles[1].click()  #X
+        tiles[4].click()  #O
+        tiles[2].click()  #X wins top row
+        self.assertTileIs(tiles[5], self.SYMBOL_BLANK)
+        tiles[5].click()  #should be ignored
+        self.assertTileIs(tiles[5], self.SYMBOL_BLANK)
+    
+    def test_occupied_square_not_overwritten(self):
+        '''Clicking an occupied square must not change it or increment the turn.
+        After X at 0, clicking 0 again should be ignored. The next click (tile 1)
+        should place O, confirming the turn did not advance.
+        '''
+        tiles = self.driver.find_elements(By.XPATH, self.BOARD_TILE_XPATH)
+        tiles[0].click()  #X at 0
+        tiles[0].click()  #ignored
+        tiles[1].click()  #should be O
+        self.assertTileIs(tiles[0], self.SYMBOL_X)
+        self.assertTileIs(tiles[1], self.SYMBOL_O)
+
+    def test_alternating_turns(self):
+        '''Check that X and O alternate correctly'''
+        tiles = self.driver.find_elements(By.XPATH, self.BOARD_TILE_XPATH)
+        tiles[0].click()
+        self.assertTileIs(tiles[0], self.SYMBOL_X)
+        tiles[1].click()
+        self.assertTileIs(tiles[1], self.SYMBOL_O)
+        tiles[2].click()
+        self.assertTileIs(tiles[2], self.SYMBOL_X)
 
 # ================= [DO NOT MAKE ANY CHANGES BELOW THIS LINE] =================
 
